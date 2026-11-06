@@ -1,7 +1,10 @@
 package com.pizzeria.app
 
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
@@ -15,6 +18,27 @@ object KtorClient {
         }
     }
 
+    const val BASE_URL = "http://127.0.0.1:8080"
 
-    const val BASE_URL = "http://10.0.2.2:8080"
+    // Función para obtener la lista de productos del catálogo
+    suspend fun fetchProducts(): List<Product> {
+        return try {
+            client.get("$BASE_URL/products").body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    suspend fun login(request: LoginRequest): LoginResponse {
+        return try {
+            client.post("$BASE_URL/login") {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }.body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            LoginResponse(success = false, message = "Error de conexión con el servidor")
+        }
+    }
 }

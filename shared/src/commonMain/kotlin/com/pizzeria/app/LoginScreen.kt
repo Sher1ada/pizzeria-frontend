@@ -62,7 +62,7 @@ fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
                         if (response.success && response.role != null && response.nombre != null) {
                             onLoginSuccess(response.role, response.nombre)
                         } else {
-                            errorMessage = response.message
+                            errorMessage = response.message ?: "Credenciales inválidas"
                         }
                     } catch (e: Exception) {
                         errorMessage = "Error de conexión con el servidor: ${e.message}"
@@ -74,33 +74,6 @@ fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
             enabled = !isLoading
         ) {
             Text(if (isLoading) "Cargando..." else "Ingresar")
-        }
-    }
-}
-
-@Composable
-fun RoleDashboard(role: String, nombre: String, onLogout: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Bienvenido/a, $nombre", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Rol: $role", style = MaterialTheme.typography.bodyLarge)
-        Spacer(modifier = Modifier.height(24.dp))
-
-        when (role.uppercase()) {
-            "ADMINISTRADOR", "ADMIN" -> Text("Panel General y Gestión de Usuarios")
-            "SUPERVISOR" -> Text("Panel de Operaciones y Reportes")
-            "CLIENTE" -> Text("Catálogo de Pizzas y Realizar Pedidos")
-            "VENDEDOR" -> Text("Gestión de Pedidos en Caja y Cobros")
-            else -> Text("Vista predeterminada de usuario")
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-        Button(onClick = onLogout) {
-            Text("Cerrar Sesión")
         }
     }
 }

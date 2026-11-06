@@ -15,14 +15,18 @@ fun App() {
                 userName = nombre
             })
         } else {
-            RoleDashboard(
-                role = userRole!!,
-                nombre = userName!!,
-                onLogout = {
-                    userRole = null
-                    userName = null
-                }
-            )
+            val logoutAction = {
+                userRole = null
+                userName = null
+            }
+
+            when (userRole!!.uppercase()) {
+                "ADMINISTRADOR", "ADMIN" -> AdminScreen(nombre = userName!!, onLogout = logoutAction)
+                "SUPERVISOR" -> SupervisorScreen(nombre = userName!!, onLogout = logoutAction)
+                "CLIENTE" -> ClientScreen(nombre = userName!!, onLogout = logoutAction)
+                "VENDEDOR" -> VendedorScreen(nombre = userName!!, onLogout = logoutAction)
+                else -> ClientScreen(nombre = userName!!, onLogout = logoutAction)
+            }
         }
     }
 }
