@@ -4,16 +4,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 
 @Composable
-fun App() {
+fun App(
+    onBiometricClick: ((onSuccess: (role: String, name: String) -> Unit) -> Unit)? = null
+) {
     var userRole by remember { mutableStateOf<String?>(null) }
     var userName by remember { mutableStateOf<String?>(null) }
 
     MaterialTheme {
         if (userRole == null || userName == null) {
-            LoginScreen(onLoginSuccess = { role, nombre ->
-                userRole = role
-                userName = nombre
-            })
+            LoginScreen(
+                onLoginSuccess = { role, nombre ->
+                    userRole = role
+                    userName = nombre
+                },
+                onBiometricClick = onBiometricClick?.let { triggerBiometric ->
+                    {
+                        triggerBiometric { role, nombre ->
+                            userRole = role
+                            userName = nombre
+                        }
+                    }
+                }
+            )
         } else {
             val logoutAction = {
                 userRole = null

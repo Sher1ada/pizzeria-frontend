@@ -41,12 +41,17 @@ kotlin {
             implementation("io.ktor:ktor-client-content-negotiation:2.3.9")
             implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.9")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
         }
 
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
             implementation("io.ktor:ktor-client-cio:2.3.9")
+
         }
 
         getByName("desktopMain") {

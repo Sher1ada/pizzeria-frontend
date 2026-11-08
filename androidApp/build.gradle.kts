@@ -17,6 +17,10 @@ dependencies {
 
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
+
+        // Librería biométrica para Android (Frontend)
+    implementation("androidx.biometric:biometric-ktx:1.2.0-alpha05")
+
 }
 
 android {

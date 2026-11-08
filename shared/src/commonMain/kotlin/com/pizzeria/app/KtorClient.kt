@@ -18,9 +18,9 @@ object KtorClient {
         }
     }
 
-    const val BASE_URL = "http://127.0.0.1:8080"
 
-    // Función para obtener la lista de productos del catálogo
+    //private const val BASE_URL = "http://10.0.2.2:8080"
+    private const val BASE_URL = "http://localhost:8080"
     suspend fun fetchProducts(): List<Product> {
         return try {
             client.get("$BASE_URL/products").body()

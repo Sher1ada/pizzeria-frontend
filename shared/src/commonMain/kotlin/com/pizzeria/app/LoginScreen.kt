@@ -1,79 +1,128 @@
 package com.pizzeria.app
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
+fun LoginScreen(
+    onLoginSuccess: (String, String) -> Unit,
+    onBiometricClick: (() -> Unit)? = null,
+    externalErrorMessage: String? = null
+) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+
     val scope = rememberCoroutineScope()
+    val activeError = externalErrorMessage ?: errorMessage
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Pizzería - Inicio de Sesión", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Pizzería - Inicio de Sesión",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Usuario") }
+            label = { Text("Usuario") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(0.8f)
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(0.8f)
         )
-        Spacer(modifier = Modifier.height(16.dp))
 
-        if (errorMessage.isNotEmpty()) {
-            Text(errorMessage, color = MaterialTheme.colorScheme.error)
+        if (!activeError.isNullOrEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = activeError,
+                color = MaterialTheme.colorScheme.error
+            )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
-                scope.launch {
-                    isLoading = true
-                    errorMessage = ""
-                    try {
-                        val response = KtorClient.client.post("${KtorClient.BASE_URL}/login") {
-                            contentType(ContentType.Application.Json)
-                            setBody(LoginRequest(username, password))
-                        }.body<LoginResponse>()
+                if (username.isBlank() || password.isBlank()) {
+                    errorMessage = "Ingresa usuario y contraseña"
+                    return@Button
+                }
 
-                        if (response.success && response.role != null && response.nombre != null) {
-                            onLoginSuccess(response.role, response.nombre)
+                isLoading = true
+                errorMessage = ""
+
+                scope.launch {
+                    try {
+                        val user = KtorClient.login(LoginRequest(username, password))
+                        isLoading = false
+
+                        if (user != null && user.success) {
+                            onLoginSuccess(user.role ?: "CLIENTE", user.nombre ?: "")
                         } else {
-                            errorMessage = response.message ?: "Credenciales inválidas"
+
+                            errorMessage = user?.message ?: "Usuario o contraseña incorrectos"
                         }
                     } catch (e: Exception) {
-                        errorMessage = "Error de conexión con el servidor: ${e.message}"
-                    } finally {
                         isLoading = false
+                        errorMessage = "Error de conexión: ${e.message}"
                     }
                 }
             },
-            enabled = !isLoading
+            enabled = !isLoading,
+            modifier = Modifier.fillMaxWidth(0.5f)
         ) {
-            Text(if (isLoading) "Cargando..." else "Ingresar")
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("Ingresar")
+            }
+        }
+
+        if (onBiometricClick != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedButton(
+                onClick = onBiometricClick,
+                modifier = Modifier.fillMaxWidth(0.5f)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Ingreso con huella"
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Usar Huella")
+            }
         }
     }
 }

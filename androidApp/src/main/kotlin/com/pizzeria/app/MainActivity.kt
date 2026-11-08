@@ -1,25 +1,34 @@
 package com.pizzeria.app
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.*
+import androidx.fragment.app.FragmentActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         setContent {
-            App()
+            var biometricError by remember { mutableStateOf<String?>(null) }
+            val isBiometricReady = BiometricHelper.isBiometricAvailable(this)
+
+            App(
+                onBiometricClick = if (isBiometricReady) { onSuccess ->
+                    BiometricHelper.showBiometricPrompt(
+                        activity = this,
+                        onSuccess = {
+                            // Al escanear la huella correctamente, asigna el rol y entra a la app
+                            onSuccess("CLIENTE", "Usuario Biométrico")
+                        },
+                        onError = { error ->
+                            biometricError = error
+                        }
+                    )
+                } else null
+            )
         }
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
 }

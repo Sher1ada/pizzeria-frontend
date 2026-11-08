@@ -16,7 +16,7 @@ fun ClientScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Hola, $nombre 🍕") },
+                title = { Text("Hola, $nombre") },
                 actions = {
                     TextButton(onClick = onLogout) {
                         Text("Cerrar Sesión")
