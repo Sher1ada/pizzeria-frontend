@@ -20,7 +20,7 @@ object KtorClient {
 
 
     //private const val BASE_URL = "http://10.0.2.2:8080"
-    private const val BASE_URL = "http://localhost:8080"
+    private const val BASE_URL = "http://pizzeria-backend-production-4a51.up.railway.app"
     suspend fun fetchProducts(): List<Product> {
         return try {
             client.get("$BASE_URL/products").body()
