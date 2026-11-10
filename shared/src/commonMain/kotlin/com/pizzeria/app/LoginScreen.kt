@@ -22,6 +22,9 @@ fun LoginScreen(
     var errorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
+
+//PRUEBAEXAMEN
+
     val scope = rememberCoroutineScope()
     val activeError = externalErrorMessage ?: errorMessage
 
@@ -126,3 +129,4 @@ fun LoginScreen(
         }
     }
 }
+
