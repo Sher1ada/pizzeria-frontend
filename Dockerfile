@@ -2,6 +2,9 @@
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
+# Instalar libatomic1 necesario para Node.js en Kotlin/Wasm
+RUN apt-get update && apt-get install -y libatomic1 && rm -rf /var/lib/apt/lists/*
+
 COPY . .
 RUN chmod +x ./gradlew
 RUN ./gradlew :shared:wasmJsBrowserDistribution --no-daemon
