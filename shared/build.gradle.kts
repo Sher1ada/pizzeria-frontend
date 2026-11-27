@@ -17,7 +17,7 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    jvm()
 
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
@@ -61,10 +61,8 @@ kotlin {
             implementation("io.ktor:ktor-client-cio:3.0.3")
         }
 
-        getByName("desktopMain") {
-            dependencies {
-                implementation("io.ktor:ktor-client-cio:3.0.3")
-            }
+        jvmMain.dependencies {
+            implementation("io.ktor:ktor-client-cio:3.0.3")
         }
 
         val wasmJsMain by getting {
